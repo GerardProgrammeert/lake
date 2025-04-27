@@ -18,7 +18,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "9000:9000"
+      - "9002:9002"
     volumes:
       - ./:/var/www/html
       - ./.dev/system/.bashrc:/home/php/.bashrc
@@ -43,20 +43,20 @@ services:
     networks:
       - traefik_proxy
 
-  mailpit:
-    image: axllent/mailpit
-    volumes:
-      - ./storage/mailpit:/storage/mailpit
+  s3:
+    image: minio/minio:latest
+    entrypoint: sh
+    command: -c 'mkdir -p /data/application && mkdir -p /data/application-public && minio server --console-address=:9001 /data'
     ports:
-      - 8025:8025
-      - 1025:1025
+      - "9000:9000"
+      - "9001:9001"
     networks:
       - traefik_proxy
+    volumes:
+      - s3:/data
     environment:
-      MP_MAX_MESSAGES: 5000
-      MP_DATA_FILE: /storage/mailpit/mailpit.db
-      MP_SMTP_AUTH_ACCEPT_ANY: 1
-      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      MINIO_ROOT_USER: application
+      MINIO_ROOT_PASSWORD: password
 
 networks:
   traefik_proxy:
@@ -65,3 +65,4 @@ networks:
 
 volumes:
   database:
+  s3:
