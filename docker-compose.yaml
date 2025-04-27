@@ -1,0 +1,67 @@
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - '8080:80'
+    volumes:
+      - ./public:/var/www/html/public
+      - ./.dev/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - traefik_proxy
+    #labels:
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.api.rule=Host(`template.local`)"
+    #  - "traefik.http.routers.api.service=docker-laravel-template-web-1"
+
+  php-fpm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./:/var/www/html
+      - ./.dev/system/.bashrc:/home/php/.bashrc
+      - ./.dev/system/.bash_aliases:/home/php/.bash_aliases
+    links:
+      - mysql
+    networks:
+      - traefik_proxy
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database_name
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - database:/var/lib/mysql
+      - .dev/mysql:/docker-entrypoint-initdb.d
+    networks:
+      - traefik_proxy
+
+  mailpit:
+    image: axllent/mailpit
+    volumes:
+      - ./storage/mailpit:/storage/mailpit
+    ports:
+      - 8025:8025
+      - 1025:1025
+    networks:
+      - traefik_proxy
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATA_FILE: /storage/mailpit/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+networks:
+  traefik_proxy:
+    internal: false
+    driver: bridge
+
+volumes:
+  database:

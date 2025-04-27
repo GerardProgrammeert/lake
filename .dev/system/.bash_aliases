@@ -1,0 +1,11 @@
+alias ll="ls -larh"
+alias lsa="ls -lah"
+alias lsd="ls -ldh */"
+alias lsf="ls -lah --file-type | grep -v @ | grep -v /"
+alias h="cd ~/"
+alias pa='php artisan'
+alias tinker="php artisan tinker"
+alias cu="composer update"
+alias ci="composer install"
+alias cda="composer dump-autoload -o"
+alias pu='vendor/bin/phpunit'
