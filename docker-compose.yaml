@@ -23,6 +23,8 @@ services:
       - ./:/var/www/html
       - ./.dev/system/.bashrc:/home/php/.bashrc
       - ./.dev/system/.bash_aliases:/home/php/.bash_aliases
+      - ./.dev/system/.aliases:/home/php/.aliases
+      - ./.dev/system/.profile:/home/php/.profile
     links:
       - mysql
     networks:

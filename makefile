@@ -1,7 +1,7 @@
 project=$(shell basename $(shell pwd))
 
 in:
-	@docker exec --user=php -it "$(project)-php-fpm-1" /bin/sh
+	@docker exec --user=php -it "$(project)-php-fpm-1" /bin/sh -l
 
 in-root:
 	docker exec --user=root -it "$(project)-php-fpm-1" /bin/sh
